@@ -1,13 +1,11 @@
 db.sqlite3
-# file with bot Token
-token.py
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+token.txt
 
 # C extensions
 *.so
