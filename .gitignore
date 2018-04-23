@@ -5,7 +5,7 @@ db.sqlite3
 __pycache__/
 *.py[cod]
 *$py.class
-token.txt
+token_telegram.py
 
 # C extensions
 *.so
