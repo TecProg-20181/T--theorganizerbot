@@ -6,12 +6,12 @@ import time
 import urllib
 import sqlalchemy
 
-from token import *
+from token_telegram import *
 
 import db
 from db import Task
 
-TOKEN = getToken()
+TOKEN = get_token()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 HELP = """
