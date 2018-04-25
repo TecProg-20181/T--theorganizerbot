@@ -11,7 +11,7 @@ from token_telegram import *
 import db
 from db import Task
 
-TOKEN = get_token()
+TOKEN = getToken()
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 HELP = """

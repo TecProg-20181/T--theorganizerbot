@@ -7,6 +7,9 @@ __pycache__/
 *$py.class
 token_telegram.py
 
+# TOKEN
+TOKEN.txt
+
 # C extensions
 *.so
 

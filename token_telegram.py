@@ -1,4 +1,7 @@
-def get_token ():
-    #insert telegram token here
-    token = ""
-    return token
+def getToken():
+		file = open("TOKEN.txt", 'r')
+
+		# line: string
+		myToken = file.read()
+
+		return myToken
