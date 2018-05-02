@@ -162,7 +162,12 @@ def handle_updates(updates):
                 send_message("_404_ Task {} not found x.x".format(task_id), chat)
                 return
 
-            task.duedate = datetime.strptime(duedate, "%Y-%m-%d").date()
+            try:
+                task.duedate = datetime.strptime(duedate, "%Y-%m-%d").date()
+            except ValueError:
+                send_message("You must inform the due date in the following format: YYYY-MM-DD", chat)
+                return
+
             db.session.commit()
             send_message("Task {} due date was set to {}".format(task_id, duedate), chat)
 
