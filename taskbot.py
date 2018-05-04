@@ -398,6 +398,8 @@ def handle_updates(updates):
             send_message(HELP, chat)
         else:
             send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
+
+            #Testing botCommand
             print("***Inside the error command condition***")
             myCommand = COMMANDS['/error']
             print ('Using Command class: ', myCommand)
