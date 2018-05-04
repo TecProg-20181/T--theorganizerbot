@@ -1,14 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 
-class BotCommand(ABC):
-	"""
-	Abstract class to implement diferent bot commands
-	"""
+"""
+Abstract class to implement diferent bot commands
+"""
+class BotCommand:
+	__metaclass__ = ABCMeta
 
+	"""
+	Execte a specific command
+	"""
 	@abstractmethod
-	def execute_commnd():
-		"""
-		Execte a specific command
-		"""
-		
+	def execute_command(self):
+		print("Im your father")
+		# raise NotImplementedError
 		pass

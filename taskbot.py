@@ -9,12 +9,34 @@ import sqlalchemy
 from datetime import datetime
 from token_telegram import *
 
+from bot_commands.botCommandChildren import *
+
 import db
 from db import Task
 
+#Bot TOLKEN
 TOKEN = getToken()
+#Bot URL
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
+#Bot Commands dictionary
+COMMANDS = {
+    '/new' : BotCommandNew(),
+    '/rename' : BotCommandRename(),
+    '/duedate' : BotCommandDuedate(),
+    '/duplicate' : BotCommandDuplicate(),
+    '/delete' : BotCommandDelete(),
+    '/todo' : BotCommandTodo(),
+    '/done' : BotCommandDone(),
+    '/list' : BotCommandList(),
+    '/dependson' : BotCommandDependson(),
+    '/priority' : BotCommandPriority(),
+    '/start' : BotCommandStart(),
+    '/help' : BotCommandHelp(),
+    '/error' : BotCommandError()
+    }
+
+#Bot help message
 HELP = """
  /new NOME
  /todo ID
@@ -376,8 +398,13 @@ def handle_updates(updates):
             send_message(HELP, chat)
         else:
             send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
+            print("***Inside the error command condition***")
+            print(COMMANDS)
+            myCommand = COMMANDS['/error']
+            print (myCommand)
+            myCommand.execute_command()
 
-
+"""MAIN"""
 def main():
     last_update_id = None
 
