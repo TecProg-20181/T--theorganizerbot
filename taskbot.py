@@ -30,6 +30,12 @@ HELP = """
  /duedate ID DATE{YYYY-MM-DD}
 """
 
+"""Emojis"""
+TODO_EMOJI = "\U0001F195"
+DOING_EMOJI = "\U000023FA"
+DONE_EMOJI = "\U00002611"
+
+
 def get_url(url):
     response = requests.get(url)
     content = response.content.decode("utf8")
@@ -69,7 +75,7 @@ def deps_text(task, chat, preceed=''):
         query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
         dep = query.one()
 
-        icon = '\U0001F195'
+        icon = TODO_EMOJI
         if dep.status == 'DOING':
             icon = '\U000023FA'
         elif dep.status == 'DONE':
@@ -268,7 +274,7 @@ def handle_updates(updates):
             a += '\U0001F4CB Task List\n'
             query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.id)
             for task in query.all():
-                icon = '\U0001F195'
+                icon = TODO_EMOJI
                 if task.status == 'DOING':
                     icon = '\U000023FA'
                 elif task.status == 'DONE':
@@ -286,7 +292,7 @@ def handle_updates(updates):
 
             a += '\U0001F4DD _Status_\n'
             query = db.session.query(Task).filter_by(status='TODO', chat=chat).order_by(Task.id)
-            a += '\n\U0001F195 *TODO*\n'
+            a += '\n{} *TODO*\n'.format(TODO_EMOJI)
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DOING', chat=chat).order_by(Task.id)
