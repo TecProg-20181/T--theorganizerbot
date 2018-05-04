@@ -5,6 +5,8 @@ from botCommand import BotCommand
 #Command /new
 class BotCommandNew(BotCommand):
 	def execute_command(self):
+		super(BotCommandNew, self).execute_command()
+		print ("Executing: '/new' command")
 		pass
 
 # Command /rename
@@ -65,4 +67,6 @@ class BotCommandHelp(BotCommand):
 #Command Error
 class BotCommandError(BotCommand):
 	def execute_command(self):
+		super(BotCommandNew, self).execute_command()
+		print ("Executing: '/error' command")
 		pass

@@ -399,9 +399,8 @@ def handle_updates(updates):
         else:
             send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
             print("***Inside the error command condition***")
-            print(COMMANDS)
             myCommand = COMMANDS['/error']
-            print (myCommand)
+            print ('Using Command class: ', myCommand)
             myCommand.execute_command()
 
 """MAIN"""
