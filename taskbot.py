@@ -77,9 +77,9 @@ def deps_text(task, chat, preceed=''):
 
         icon = TODO_EMOJI
         if dep.status == 'DOING':
-            icon = '\U000023FA'
+            icon = DOING_EMOJI
         elif dep.status == 'DONE':
-            icon = '\U00002611'
+            icon = DONE_EMOJI
 
         if i + 1 == len(task.dependencies.split(',')[:-1]):
             line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
@@ -276,9 +276,9 @@ def handle_updates(updates):
             for task in query.all():
                 icon = TODO_EMOJI
                 if task.status == 'DOING':
-                    icon = '\U000023FA'
+                    icon = DOING_EMOJI
                 elif task.status == 'DONE':
-                    icon = '\U00002611'
+                    icon = DONE_EMOJI
 
                 if not task.duedate:
                     a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.priority)
@@ -296,11 +296,11 @@ def handle_updates(updates):
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DOING', chat=chat).order_by(Task.id)
-            a += '\n\U000023FA *DOING*\n'
+            a += '\n{} *DOING*\n'.format(DOING_EMOJI)
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DONE', chat=chat).order_by(Task.id)
-            a += '\n\U00002611 *DONE*\n'
+            a += '\n\{} *DONE*\n'.format(DONE_EMOJI)
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
 
