@@ -5,6 +5,10 @@ db.sqlite3
 __pycache__/
 *.py[cod]
 *$py.class
+token_telegram.py
+
+# TOKEN
+TOKEN.txt
 
 # C extensions
 *.so
@@ -111,4 +115,3 @@ Session.vim
 *~
 # auto-generated tag files
 tags
-
