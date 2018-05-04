@@ -6,6 +6,7 @@ import time
 import urllib
 import sqlalchemy
 
+from datetime import datetime
 from token_telegram import *
 
 import db
@@ -26,6 +27,7 @@ HELP = """
  /duplicate ID
  /priority ID PRIORITY{low, medium, high}
  /help
+ /duedate ID DATE
 """
 
 def get_url(url):
@@ -136,6 +138,39 @@ def handle_updates(updates):
                 task.name = text
                 db.session.commit()
                 send_message("Task {} redefined from {} to {}".format(task_id, old_text, text), chat)
+
+        elif command == '/duedate':
+
+            message_params = msg.split(' ', 1)
+            task_id = message_params[0]
+
+            if not task_id.isdigit():
+                send_message("You must inform for the task id", chat)
+                return
+
+            try:
+                duedate = message_params[1]
+            except IndexError:
+                send_message("You want to set a due date to the task {}, but you didn't provide a due date".format(task_id), chat)
+                return
+
+            task_id = int(task_id)
+            query = db.session.query(Task).filter_by(id=task_id, chat=chat)
+            try:
+                task = query.one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                send_message("_404_ Task {} not found x.x".format(task_id), chat)
+                return
+
+            try:
+                task.duedate = datetime.strptime(duedate, "%Y-%m-%d").date()
+            except ValueError:
+                send_message("You must inform the due date in the following format: YYYY-MM-DD", chat)
+                return
+
+            db.session.commit()
+            send_message("Task {} due date was set to {}".format(task_id, duedate), chat)
+
         elif command == '/duplicate':
             if not msg.isdigit():
                 send_message("You must inform the task id", chat)
@@ -236,7 +271,7 @@ def handle_updates(updates):
                 elif task.status == 'DONE':
                     icon = '\U00002611'
 
-                a += '[[{}]] {} {}\n'.format(task.id, icon, task.name)
+                a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.duedate)
                 a += deps_text(task, chat)
 
             send_message(a, chat)
