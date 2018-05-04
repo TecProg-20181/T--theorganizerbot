@@ -271,7 +271,7 @@ def handle_updates(updates):
                 elif task.status == 'DONE':
                     icon = '\U00002611'
 
-                a += '[[{}]] {} {}\n'.format(task.id, icon, task.name)
+                a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.duedate)
                 a += deps_text(task, chat)
 
             send_message(a, chat)
