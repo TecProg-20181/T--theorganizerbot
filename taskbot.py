@@ -34,6 +34,8 @@ HELP = """
 TODO_EMOJI = "\U0001F195"
 DOING_EMOJI = "\U000023FA"
 DONE_EMOJI = "\U00002611"
+LIST_EMOJI = "\U0001F4CB"
+STATUS_EMOJI = "\U0001F4DD"
 
 
 def get_url(url):
@@ -271,7 +273,7 @@ def handle_updates(updates):
         elif command == '/list':
             a = ''
 
-            a += '\U0001F4CB Task List\n'
+            a += '{} Task List\n'.format(LIST_EMOJI)
             query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.id)
             for task in query.all():
                 icon = TODO_EMOJI
@@ -290,7 +292,7 @@ def handle_updates(updates):
             send_message(a, chat)
             a = ''
 
-            a += '\U0001F4DD _Status_\n'
+            a += '{} _Status_\n'.format(STATUS_EMOJI)
             query = db.session.query(Task).filter_by(status='TODO', chat=chat).order_by(Task.id)
             a += '\n{} *TODO*\n'.format(TODO_EMOJI)
             for task in query.all():
