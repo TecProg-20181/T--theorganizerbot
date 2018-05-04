@@ -27,7 +27,7 @@ HELP = """
  /duplicate ID
  /priority ID PRIORITY{low, medium, high}
  /help
- /duedate ID DATE
+ /duedate ID DATE{YYYY-MM-DD}
 """
 
 def get_url(url):
@@ -271,8 +271,12 @@ def handle_updates(updates):
                 elif task.status == 'DONE':
                     icon = '\U00002611'
 
-                a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.duedate)
-                a += deps_text(task, chat)
+                if not task.duedate:
+                    a += '[[{}]] {} {}\n'.format(task.id, icon, task.name)
+                    a += deps_text(task, chat)
+                else:
+                    a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.duedate)
+                    a += deps_text(task, chat)
 
             send_message(a, chat)
             a = ''
