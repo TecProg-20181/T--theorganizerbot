@@ -30,6 +30,14 @@ HELP = """
  /duedate ID DATE{YYYY-MM-DD}
 """
 
+"""Emojis"""
+TODO_EMOJI = "\U0001F195"
+DOING_EMOJI = "\U000023FA"
+DONE_EMOJI = "\U00002611"
+LIST_EMOJI = "\U0001F4CB"
+STATUS_EMOJI = "\U0001F4DD"
+
+
 def get_url(url):
     response = requests.get(url)
     content = response.content.decode("utf8")
@@ -69,11 +77,11 @@ def deps_text(task, chat, preceed=''):
         query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
         dep = query.one()
 
-        icon = '\U0001F195'
+        icon = TODO_EMOJI
         if dep.status == 'DOING':
-            icon = '\U000023FA'
+            icon = DOING_EMOJI
         elif dep.status == 'DONE':
-            icon = '\U00002611'
+            icon = DONE_EMOJI
 
         if i + 1 == len(task.dependencies.split(',')[:-1]):
             line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
@@ -265,14 +273,14 @@ def handle_updates(updates):
         elif command == '/list':
             a = ''
 
-            a += '\U0001F4CB Task List\n'
+            a += '{} Task List\n'.format(LIST_EMOJI)
             query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.id)
             for task in query.all():
-                icon = '\U0001F195'
+                icon = TODO_EMOJI
                 if task.status == 'DOING':
-                    icon = '\U000023FA'
+                    icon = DOING_EMOJI
                 elif task.status == 'DONE':
-                    icon = '\U00002611'
+                    icon = DONE_EMOJI
 
                 if not task.duedate:
                     a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.priority)
@@ -284,17 +292,17 @@ def handle_updates(updates):
             send_message(a, chat)
             a = ''
 
-            a += '\U0001F4DD _Status_\n'
+            a += '{} _Status_\n'.format(STATUS_EMOJI)
             query = db.session.query(Task).filter_by(status='TODO', chat=chat).order_by(Task.id)
-            a += '\n\U0001F195 *TODO*\n'
+            a += '\n{} *TODO*\n'.format(TODO_EMOJI)
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DOING', chat=chat).order_by(Task.id)
-            a += '\n\U000023FA *DOING*\n'
+            a += '\n{} *DOING*\n'.format(DOING_EMOJI)
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DONE', chat=chat).order_by(Task.id)
-            a += '\n\U00002611 *DONE*\n'
+            a += '\n\{} *DONE*\n'.format(DONE_EMOJI)
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
 
