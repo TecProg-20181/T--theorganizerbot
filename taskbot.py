@@ -107,13 +107,10 @@ def handle_updates(updates):
         print(command, msg, chat)
 
         if command == '/new':
-            if not msg.isdigit():
-                send_message("You must inform the task name", chat)
-            else:
-                task = Task(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
-                db.session.add(task)
-                db.session.commit()
-                send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
+            task = Task(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
+            db.session.add(task)
+            db.session.commit()
+            send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
 
         elif command == '/rename':
             text = ''
@@ -275,10 +272,10 @@ def handle_updates(updates):
                     icon = '\U00002611'
 
                 if not task.duedate:
-                    a += '[[{}]] {} {}\n'.format(task.id, icon, task.name)
+                    a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.priority)
                     a += deps_text(task, chat)
                 else:
-                    a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.duedate)
+                    a += '[[{}]] {} {} {} {}\n'.format(task.id, icon, task.name, task.priority, task.duedate)
                     a += deps_text(task, chat)
 
             send_message(a, chat)
@@ -346,6 +343,7 @@ def handle_updates(updates):
 
                 db.session.commit()
                 send_message("Task {} dependencies up to date".format(task_id), chat)
+
         elif command == '/priority':
             text = ''
             if msg != '':
@@ -372,8 +370,9 @@ def handle_updates(updates):
                         send_message("The priority *must be* one of the following: high, medium, low", chat)
                     else:
                         task.priority = text.lower()
-                        send_message("*Task {}* priority has priority *{}*".format(task_id, text.lower()), chat)
+                        send_message("*Task {}* priority has priority *{}*".format(task_id, task.priority), chat)
                 db.session.commit()
+
 
         elif command == '/start':
             send_message("Welcome! Here is a list of things you can do.", chat)
