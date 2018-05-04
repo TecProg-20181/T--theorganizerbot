@@ -4,15 +4,13 @@ import json
 import requests
 import time
 import urllib
-import sqlalchemy
 
-from datetime import datetime
-from token_telegram import *
+import sqlalchemy
 
 import db
 from db import Task
 
-TOKEN = getToken()
+TOKEN = ""
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 HELP = """
@@ -27,16 +25,7 @@ HELP = """
  /duplicate ID
  /priority ID PRIORITY{low, medium, high}
  /help
- /duedate ID DATE{YYYY-MM-DD}
 """
-
-"""Emojis"""
-TODO_EMOJI = "\U0001F195"
-DOING_EMOJI = "\U000023FA"
-DONE_EMOJI = "\U00002611"
-LIST_EMOJI = "\U0001F4CB"
-STATUS_EMOJI = "\U0001F4DD"
-
 
 def get_url(url):
     response = requests.get(url)
@@ -77,11 +66,11 @@ def deps_text(task, chat, preceed=''):
         query = db.session.query(Task).filter_by(id=int(task.dependencies.split(',')[:-1][i]), chat=chat)
         dep = query.one()
 
-        icon = TODO_EMOJI
+        icon = '\U0001F195'
         if dep.status == 'DOING':
-            icon = DOING_EMOJI
+            icon = '\U000023FA'
         elif dep.status == 'DONE':
-            icon = DONE_EMOJI
+            icon = '\U00002611'
 
         if i + 1 == len(task.dependencies.split(',')[:-1]):
             line += '└── [[{}]] {} {}\n'.format(dep.id, icon, dep.name)
@@ -115,13 +104,10 @@ def handle_updates(updates):
         print(command, msg, chat)
 
         if command == '/new':
-            if msg == '':
-                send_message("A task must have a name", chat)
-            else:
-                task = Task(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
-                db.session.add(task)
-                db.session.commit()
-                send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
+            task = Task(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
+            db.session.add(task)
+            db.session.commit()
+            send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
 
         elif command == '/rename':
             text = ''
@@ -149,39 +135,6 @@ def handle_updates(updates):
                 task.name = text
                 db.session.commit()
                 send_message("Task {} redefined from {} to {}".format(task_id, old_text, text), chat)
-
-        elif command == '/duedate':
-
-            message_params = msg.split(' ', 1)
-            task_id = message_params[0]
-
-            if not task_id.isdigit():
-                send_message("You must inform for the task id", chat)
-                return
-
-            try:
-                duedate = message_params[1]
-            except IndexError:
-                send_message("You want to set a due date to the task {}, but you didn't provide a due date".format(task_id), chat)
-                return
-
-            task_id = int(task_id)
-            query = db.session.query(Task).filter_by(id=task_id, chat=chat)
-            try:
-                task = query.one()
-            except sqlalchemy.orm.exc.NoResultFound:
-                send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                return
-
-            try:
-                task.duedate = datetime.strptime(duedate, "%Y-%m-%d").date()
-            except ValueError:
-                send_message("You must inform the due date in the following format: YYYY-MM-DD", chat)
-                return
-
-            db.session.commit()
-            send_message("Task {} due date was set to {}".format(task_id, duedate), chat)
-
         elif command == '/duplicate':
             if not msg.isdigit():
                 send_message("You must inform the task id", chat)
@@ -273,36 +226,32 @@ def handle_updates(updates):
         elif command == '/list':
             a = ''
 
-            a += '{} Task List\n'.format(LIST_EMOJI)
+            a += '\U0001F4CB Task List\n'
             query = db.session.query(Task).filter_by(parents='', chat=chat).order_by(Task.id)
             for task in query.all():
-                icon = TODO_EMOJI
+                icon = '\U0001F195'
                 if task.status == 'DOING':
-                    icon = DOING_EMOJI
+                    icon = '\U000023FA'
                 elif task.status == 'DONE':
-                    icon = DONE_EMOJI
+                    icon = '\U00002611'
 
-                if not task.duedate:
-                    a += '[[{}]] {} {} {}\n'.format(task.id, icon, task.name, task.priority)
-                    a += deps_text(task, chat)
-                else:
-                    a += '[[{}]] {} {} {} {}\n'.format(task.id, icon, task.name, task.priority, task.duedate)
-                    a += deps_text(task, chat)
+                a += '[[{}]] {} {}\n'.format(task.id, icon, task.name)
+                a += deps_text(task, chat)
 
             send_message(a, chat)
             a = ''
 
-            a += '{} _Status_\n'.format(STATUS_EMOJI)
+            a += '\U0001F4DD _Status_\n'
             query = db.session.query(Task).filter_by(status='TODO', chat=chat).order_by(Task.id)
-            a += '\n{} *TODO*\n'.format(TODO_EMOJI)
+            a += '\n\U0001F195 *TODO*\n'
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DOING', chat=chat).order_by(Task.id)
-            a += '\n{} *DOING*\n'.format(DOING_EMOJI)
+            a += '\n\U000023FA *DOING*\n'
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
             query = db.session.query(Task).filter_by(status='DONE', chat=chat).order_by(Task.id)
-            a += '\n\{} *DONE*\n'.format(DONE_EMOJI)
+            a += '\n\U00002611 *DONE*\n'
             for task in query.all():
                 a += '[[{}]] {}\n'.format(task.id, task.name)
 
@@ -354,7 +303,6 @@ def handle_updates(updates):
 
                 db.session.commit()
                 send_message("Task {} dependencies up to date".format(task_id), chat)
-
         elif command == '/priority':
             text = ''
             if msg != '':
@@ -381,9 +329,8 @@ def handle_updates(updates):
                         send_message("The priority *must be* one of the following: high, medium, low", chat)
                     else:
                         task.priority = text.lower()
-                        send_message("*Task {}* priority has priority *{}*".format(task_id, task.priority), chat)
+                        send_message("*Task {}* priority has priority *{}*".format(task_id, text.lower()), chat)
                 db.session.commit()
-
 
         elif command == '/start':
             send_message("Welcome! Here is a list of things you can do.", chat)
@@ -411,3 +358,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
