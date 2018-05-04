@@ -107,10 +107,13 @@ def handle_updates(updates):
         print(command, msg, chat)
 
         if command == '/new':
-            task = Task(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
-            db.session.add(task)
-            db.session.commit()
-            send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
+            if not msg.isdigit():
+                send_message("You must inform the task name", chat)
+            else:
+                task = Task(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
+                db.session.add(task)
+                db.session.commit()
+                send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
 
         elif command == '/rename':
             text = ''
