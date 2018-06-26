@@ -28,6 +28,14 @@ class Task(Base):
             self.id, self.chat, self.name, self.status
         )
 
+    @classmethod
+    def create(cls, **kwargs):
+        print(cls)
+        instance = cls(**kwargs)
+        session.add(instance)
+        session.commit()
+        return instance
+
 Base.metadata.create_all(engine)
 
 if __name__ == '__main__':
