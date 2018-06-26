@@ -9,7 +9,6 @@ import sqlalchemy
 from datetime import datetime
 from token_telegram import *
 
-import db
 from db import Task
 
 TOKEN = getToken()

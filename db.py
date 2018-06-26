@@ -40,7 +40,6 @@ class Task(Base):
 
     @classmethod
     def create(cls, **kwargs):
-        print(cls)
         instance = cls(**kwargs)
         session.add(instance)
         session.commit()
