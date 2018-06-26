@@ -97,6 +97,22 @@ def deps_text(task, chat, preceed=''):
 
     return text
 
+def make_command(case):
+    id_list = msg.split(" ")
+    for id in id_list:
+        if not id.isdigit():
+            send_message("You must inform the task id", chat)
+        else:
+            task_id = int(id)
+            query = db.session.query(Task).filter_by(id=task_id, chat=chat)
+            try:
+                task = query.one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                send_message("_404_ Task {} not found x.x".format(task_id), chat)
+                return
+            task.status = case
+            db.session.commit()
+            send_message("{} task [[{}]] {}".format(task.id, task.name), case, chat)
 
 def handle_updates(updates):
     for update in updates["result"]:
@@ -234,55 +250,11 @@ def handle_updates(updates):
                 send_message("Task [[{}]] deleted".format(task_id), chat)
 
         elif command == '/todo':
-            id_list= msg.split(" ")
-            for id in id_list:
-                if not id.isdigit():
-                    send_message("you must inform the task", chat)
-                else:
-                    task_id = int(id)
-                    query = db.session.query(Task).filter_by(id=task_id, chat=chat)
-                    try:
-                        task = query.one()
-                    except sqlalchemy.orm.exc.NoResultFound:
-                        send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                        return
-                    task.status = 'TODO'
-                    db.session.commit()
-                    send_message("*TODO* task [[{}]] {}".format(task.id, task.name), chat)
-
+            make_command("TODO")
         elif command == '/doing':
-            id_list = msg.split(" ")
-            for id in id_list:
-                if not id.isdigit():
-                    send_message("You must inform the task id", chat)
-                else:
-                    task_id = int(id)
-                    query = db.session.query(Task).filter_by(id=task_id, chat=chat)
-                    try:
-                        task = query.one()
-                    except sqlalchemy.orm.exc.NoResultFound:
-                        send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                        return
-                    task.status = 'DOING'
-                    db.session.commit()
-                    send_message("*DOING* task [[{}]] {}".format(task.id, task.name), chat)
-
+            make_command("DOING")
         elif command == '/done':
-            id_list = msg.split(" ")
-            for id in id_list:
-                if not id.isdigit():
-                    send_message("You must inform the task id", chat)
-                else:
-                    task_id = int(id)
-                    query = db.session.query(Task).filter_by(id=task_id, chat=chat)
-                    try:
-                        task = query.one()
-                    except sqlalchemy.orm.exc.NoResultFound:
-                        send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                        return
-                    task.status = 'DONE'
-                    db.session.commit()
-                    send_message("*DONE* task [[{}]] {}".format(task.id, task.name), chat)
+            make_command("DONE")
 
         elif command == '/list':
             a = ''
