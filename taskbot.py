@@ -132,9 +132,8 @@ def handle_updates(updates):
                 send_message("You must inform the task id", chat)
             else:
                 task_id = int(msg)
-                query = db.session.query(Task).filter_by(id=task_id, chat=chat)
                 try:
-                    task = query.one()
+                    task = Task.find_by(id=task_id, chat=chat)
                 except sqlalchemy.orm.exc.NoResultFound:
                     send_message("_404_ Task {} not found x.x".format(task_id), chat)
                     return

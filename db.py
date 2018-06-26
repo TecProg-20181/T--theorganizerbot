@@ -29,6 +29,11 @@ class Task(Base):
         )
 
     @classmethod
+    def find_by(cls, **kwargs):
+        query = session.query(cls).filter_by(**kwargs)
+        return query.one()
+
+    @classmethod
     def create(cls, **kwargs):
         print(cls)
         instance = cls(**kwargs)
