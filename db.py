@@ -34,12 +34,24 @@ class Task(Base):
         return query.one()
 
     @classmethod
+    def filter_by(cls, **kwargs):
+        query = session.query(cls).filter_by(**kwargs)
+        return query
+
+    @classmethod
     def create(cls, **kwargs):
         print(cls)
         instance = cls(**kwargs)
         session.add(instance)
         session.commit()
         return instance
+
+    def save(self):
+        session.commit()
+
+    def delete(self):
+        session.delete(self)
+        session.commit()
 
 Base.metadata.create_all(engine)
 
