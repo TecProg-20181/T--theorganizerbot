@@ -8,6 +8,7 @@ import sqlalchemy
 
 from datetime import datetime
 from token_telegram import *
+from github_issue import *
 
 from db import Task
 
@@ -118,6 +119,12 @@ def handle_updates(updates):
             else:
                 task = Task.create(chat=chat, name=msg, status='TODO', dependencies='', parents='', priority='')
                 send_message("New task *TODO* [[{}]] {}".format(task.id, task.name), chat)
+                push_issue = push_github_issue(task.name)
+                if not push_issue == 0:
+                    push_issue
+                    send_message("Created a new issue named {} in your repository".format(task.name), chat)
+                else:
+                    send_message("Couldn't create an issue to the repository, check your settings!", chat)
 
         elif command == '/rename':
             text = ''
