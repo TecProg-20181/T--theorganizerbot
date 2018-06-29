@@ -325,24 +325,31 @@ def handle_updates(updates):
                     task.dependencies = ''
                     send_message("Dependencies removed from task {}".format(task_id), chat)
                 else:
+                    task_dependencies_updated = False
                     for depid in text.split(' '):
                         if not depid.isdigit():
                             send_message("All dependencies ids must be numeric, and not {}".format(depid), chat)
                         else:
                             depid = int(depid)
                             try:
-                                taskdep = Task.find_by(id=depid, chat=chat)
-                                taskdep.parents += str(task.id) + ','
+                                task_dependency = Task.find_by(id=depid, chat=chat)
+
+                                if already_dependson(task, task_dependency):
+                                    send_message("This task already depends on another task.", chat)
+                                else:
+                                    task_dependencies_updated = True
+                                    task_dependency.parents += str(task.id) + ','
+                                    deplist = task.dependencies.split(',')
+                                    if str(depid) not in deplist:
+                                        task.dependencies += str(depid) + ','
+
                             except sqlalchemy.orm.exc.NoResultFound:
                                 send_message("_404_ Task {} not found x.x".format(depid), chat)
                                 continue
 
-                            deplist = task.dependencies.split(',')
-                            if str(depid) not in deplist:
-                                task.dependencies += str(depid) + ','
-
                 task.save()
-                send_message("Task {} dependencies up to date".format(task_id), chat)
+                if task_dependencies_updated:
+                    send_message("Task {} dependencies up to date".format(task_id), chat)
 
         elif command == '/priority':
             text = ''
@@ -381,6 +388,24 @@ def handle_updates(updates):
             send_message(HELP, chat)
         else:
             send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
+
+
+def already_dependson(task, task_dependency):
+    has_no_parents = len(task.parents) == 0
+
+    if has_no_parents:
+        return False
+
+    # Get all parents, except the last one
+    task_parents = task.parents.split(',')[:-1]
+
+    dependency_in_parents = str(task_dependency.id) in task_parents
+    if dependency_in_parents:
+        return True
+
+    parent = Task.find_by(id=int(task_parents[0]), chat=task.chat)
+    return already_dependson(parent, task_dependency)
+
 
 
 def main():
