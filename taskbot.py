@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# coding: utf-8
 
 import json
 import requests
@@ -221,46 +222,13 @@ def handle_updates(updates):
                 send_message("Task [[{}]] deleted".format(task_id), chat)
 
         elif command == '/todo':
-            if not msg.isdigit():
-                send_message("You must inform the task id", chat)
-            else:
-                task_id = int(msg)
-                try:
-                    task = Task.find_by(id=task_id, chat=chat)
-                except sqlalchemy.orm.exc.NoResultFound:
-                    send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                    return
-                task.status = 'TODO'
-                task.save()
-                send_message("*TODO* task [[{}]] {}".format(task.id, task.name), chat)
+            change_task_status(msg, 'TODO')
 
         elif command == '/doing':
-            if not msg.isdigit():
-                send_message("You must inform the task id", chat)
-            else:
-                task_id = int(msg)
-                try:
-                    task = Task.find_by(id=task_id, chat=chat)
-                except sqlalchemy.orm.exc.NoResultFound:
-                    send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                    return
-                task.status = 'DOING'
-                task.save()
-                send_message("*DOING* task [[{}]] {}".format(task.id, task.name), chat)
+            change_task_status(msg, 'DOING')
 
         elif command == '/done':
-            if not msg.isdigit():
-                send_message("You must inform the task id", chat)
-            else:
-                task_id = int(msg)
-                try:
-                    task = Task.find_by(id=task_id, chat=chat)
-                except sqlalchemy.orm.exc.NoResultFound:
-                    send_message("_404_ Task {} not found x.x".format(task_id), chat)
-                    return
-                task.status = 'DONE'
-                task.save()
-                send_message("*DONE* task [[{}]] {}".format(task.id, task.name), chat)
+            change_task_status(msg, 'DONE')
 
         elif command == '/list':
             a = ''
@@ -389,6 +357,19 @@ def handle_updates(updates):
         else:
             send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
 
+def change_task_status(msg, newStatus):
+    if not msg.isdigit():
+            send_message("You must inform the task id", chat)
+    else:
+        task_id = int(msg)
+        try:
+            task = Task.find_by(id=task_id, chat=chat)
+        except sqlalchemy.orm.exc.NoResultFound:
+            send_message("_404_ Task {} not found x.x".format(task_id), chat)
+            return
+        task.status = newStatus
+        task.save()
+        send_message("*{}* task [[{}]] {}".format(newStatus, task.id, task.name), chat)
 
 def already_dependson(task, task_dependency):
     has_no_parents = len(task.parents) == 0
