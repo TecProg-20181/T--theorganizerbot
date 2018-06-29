@@ -3,7 +3,7 @@ import taskbot
 from token_telegram import *
 
 class URLTest(unittest.TestCase):
-	"""docstring for URLTest"""
+	
 	def test_get_url(self):
 		TOKEN = getToken()
 		URL = "https://api.telegram.org/bot{}/".format(TOKEN)
