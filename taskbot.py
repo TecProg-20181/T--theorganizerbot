@@ -222,13 +222,13 @@ def handle_updates(updates):
                 send_message("Task [[{}]] deleted".format(task_id), chat)
 
         elif command == '/todo':
-            change_task_status(msg, 'TODO')
+            change_task_status(msg, chat, 'TODO')
 
         elif command == '/doing':
-            change_task_status(msg, 'DOING')
+            change_task_status(msg, chat, 'DOING')
 
         elif command == '/done':
-            change_task_status(msg, 'DONE')
+            change_task_status(msg, chat, 'DONE')
 
         elif command == '/list':
             a = ''
@@ -357,7 +357,7 @@ def handle_updates(updates):
         else:
             send_message("I'm sorry dave. I'm afraid I can't do that.", chat)
 
-def change_task_status(msg, newStatus):
+def change_task_status(msg, chat, newStatus):
     if not msg.isdigit():
             send_message("You must inform the task id", chat)
     else:
